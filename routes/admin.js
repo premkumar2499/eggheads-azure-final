@@ -9,10 +9,17 @@ const config = require('../config/database');
 mongoose.connect(config.database, { useNewUrlParser: true, useUnifiedTopology: true });
 let db = mongoose.connection;
 
-if(req.user)
-{
-router.all('/admin/*',function (req, res, next) {
-    req.app.locals.layout = 'layout'; // set User layout here
+router.all('/*',function (req, res, next) {
+    if(req.user)
+    {
+        req.flash('error_msg', 'Permission Denied!!!');
+        res.redirect('/users/userhome');
+    }
+    else{
+        req.app.locals.layout = 'layout'; // set User layout here
+        return next();
+    }
+    
 });
 
 //routes to admin_login.handlebars page
@@ -127,9 +134,5 @@ router.post('/not_paid_user_data', function (req, res) {
        
     }
 });
-}
-else
-{
-    res.redirect('/users/userhome');
-}
+
 module.exports = router;
