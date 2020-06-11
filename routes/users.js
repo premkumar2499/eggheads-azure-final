@@ -510,6 +510,16 @@ router.post('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz',
   }
 });
 
+
+//View Learderboard.
+router.get('/userhome/ignite/leaderboard',function(req,res){
+  var query = {course:'ignite'};
+  UserStatus.find(query,'Name course quiz_cumulative_score').sort({ quiz_cumulative_score : 'descending'}).lean().exec(function(err,score_data){
+    if(err) throw err;
+    res.render('leaderboard',{score_data:score_data});
+  });
+});
+
 //kindle routes starts here.
 router.get('/userhome/kindle',function(req,res){
   res.render('kindle');

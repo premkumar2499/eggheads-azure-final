@@ -1,0 +1,22 @@
+<table class="table table-bordered table-hover text-center container">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">S.No</th>
+            <th scope="col">Name</th>
+            <th scope="col">Course</th>
+            <th scope="col">eggs</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#if score_data}}
+            {{#each score_data }}
+            <tr>
+                    <th scope="row">{{math @index "+" 1}}</th>
+                    <td>{{Name}}</td>
+                    <td>{{course}}</td>
+                    <td>{{ quiz_cumulative_score }}</td>
+            </tr>
+            {{/each}}
+        {{/if}}
+    </tbody>
+</table>
