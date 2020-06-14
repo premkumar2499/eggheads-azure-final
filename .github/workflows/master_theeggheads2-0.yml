@@ -31,5 +31,5 @@ jobs:
       with:
         app-name: 'theeggheads2-0'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_3fccbc1b19f7408a8dd3a69054021189 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_889e07d45b35451e88cb86882cc2a899 }}
         package: .
