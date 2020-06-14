@@ -2,33 +2,32 @@
  
 
   <!-- video player -->
-        
             <div class="video">
                       <div class="container">
                         <div class="row justify-content-center">
                         <h2 class='v-title'>{{ title }}</h2>
                         </div>
                         <div class="row justify-content-center">
-                            <video
+                            <!-- <video
                                 id="my-video"
-                                class="video-js"
+                                class="video-js vjs-big-play-centered"
                                 controls
                                 preload="auto"
                                 width="900"
                                 height="500"
                                 poster="MY_VIDEO_POSTER.jpg"
                                 data-setup="{}"
-                                >
+                                > -->
                             
-                                <source src="{{ src }}"type='video/mp4' />"; ?>
+                                {{ src }}
                                 <!--<source src="videos/MY_VIDEO.mp4" type="video/mp4" />-->
                                 <!-- <source src="MY_VIDEO.webm" type="video/webm" /> -->
-                                <p class="vjs-no-js">style
+                                <!-- <p class="vjs-no-js">style
                                 To view this video please enable JavaScript, and consider upgrading to a
                                 web browser that
                                 <a href="" target="_blank">supports HTML5 video</a>
-                                </p>
-                            </video>
+                                </p> -->
+                            <!-- </video> -->
                           </div>
                     </div>
             </div>

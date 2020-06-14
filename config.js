@@ -170,12 +170,19 @@ app.use('/admin', admin);
 //port is set at 4000
 app.set('port', (process.env.PORT || 4000));
 
+/*app.all('/*', function (req, res, next) {
+  if(!req.user){
+    req.app.locals.layout = 'layout'; // set User layout here
+  }
+});*/
+
 //localhost:4000 hits as below
 app.get('/', (req, res, next) => {
   if(req.user){
     res.redirect('/users/userhome');
   }
   else{
+    req.app.locals.layout = 'layout'; // set User layout here
     res.render("home");
   }
 });

@@ -26,6 +26,7 @@ router.get('/register',function(req,res){
     res.redirect('/users/userhome');
   }
   else{
+    req.app.locals.layout = 'layout'; // set User layout here
     res.render('register');
   }
 });
@@ -102,6 +103,7 @@ router.get('/login',function(req,res){
     res.redirect('/users/userhome');
   }
   else{
+    req.app.locals.layout = 'layout'; // set User layout here
     res.render('login');
   }
 });
@@ -165,6 +167,7 @@ router.get('/payment', ensureAuthenticated, function(req,res,next){
     });
   }
   else{
+    req.app.locals.layout = 'layout'; // set User layout here
     res.render('payment');
   }
 });
