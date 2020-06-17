@@ -14,7 +14,7 @@
     <p class="lead text-center">NOTE: Minimum 60% score is required to unlock the next course</p>
     <form  id="myForm" action="/users/userhome/ignite/week{{ currentWeek }}/day{{ currentDay }}/quiz{{ currentQuiz }}" method="post">
         {{#each quiz_data }}
-            <h1 class="display">{{ this.id }}. {{ this.question }}</h1></br>
+            <h1 class="display">{{ this.id }}. {{{ this.question }}}</h1></br>
             <div class="container">
                 <input class="form-check-input" id="radioID" type="radio" name="ans{{ this.id }}" value="A">
                 <label class="form-check-label" for="exampleRadios1">
