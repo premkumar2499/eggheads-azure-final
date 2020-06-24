@@ -8,6 +8,7 @@ let User = require('../models/user');
 let UserStatus = require('../models/userStatus');
 let ignite = require('../models/ignite');
 let quiz_model = require('../models/quiz');
+const quiz = require('../models/quiz');
 
 
 router.all('/userhome/*',ensureAuthenticated, function (req, res, next) {
@@ -233,15 +234,15 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/', async function(r
 
   //get user current video id
   var query = {email:req.user.email};
-
+  let quiz1;
   //check user video id in ignite and get quiz data
   let quiz_data = await UserStatus.find(query,'quiz_status').lean().exec();
   quiz_data.forEach(e => {
-    quiz = e.quiz_status;
+    quiz1 = e.quiz_status;
   });
-  console.log("quiz_status"+quiz);
+  //console.log("quiz_status"+quiz1);
 
-  ignite.find({ $and: [{ week: parseInt(req.params.currentWeek) }, { Day: parseInt(req.params.clickedDay) } ] },'title id').lean().exec(function(err, titleAndIds) {
+  ignite.find({ $and: [{ week: parseInt(req.params.currentWeek) }, { Day: parseInt(req.params.clickedDay) } ] },'title id').sort({ id : 'ascending'}).lean().exec(function(err, titleAndIds) {
     if(err) throw err;
     //console.log(user);
     var query = {email: req.user.email};
@@ -251,6 +252,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/', async function(r
         res.redirect('/users/userhome/ignite/week'+userStatus.week+'/day'+userStatus.DayOrLevel);
       }
       else{
+        //console.log(titleAndIds);
         res.render('ignite', {
           currentTitle_id: currentTitle_id,
           titleAndIds: titleAndIds,
@@ -260,7 +262,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/', async function(r
           currentDay: userStatus.DayOrLevel,
           url_week: parseInt(req.params.currentWeek),
           url_day: parseInt(req.params.clickedDay),
-          quiz : quiz
+          quiz1 : quiz1
         });
       }
     });
@@ -279,7 +281,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
   video_array.forEach(e => {
     video_id = e.title_id;
   });
-  console.log("video_id"+video_id);
+  //console.log("video_id"+video_id);
   if(video==video_id){
 
     var query = {id: video_id};
@@ -404,7 +406,7 @@ router.get('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', 
     user_day = e.DayOrLevel;
   });
   
-  let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day } ] }).lean().exec();
+  let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day } ] }).sort({ id : 'ascending'}).lean().exec();
   /*var query = {email: req.user.email};
       new Promise((resolve, reject) => {
       //you update code here
@@ -416,7 +418,7 @@ router.get('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', 
         .then((result) => resolve())
         .catch((err) => reject(err));
     });*/
-    console.log("quiz_data"+quiz_data[0]);
+    //console.log("quiz_data"+quiz_data[0]);
   res.render('quiz',{
     quiz_data : quiz_data, 
     currentWeek:parseInt(req.params.currentWeek),
@@ -427,7 +429,7 @@ router.get('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', 
 
 //AFTER SUBMITTING THE QUIZ
 router.post('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', async function(req, res){
-  console.log("I am in quiz post router");
+  //console.log("I am in quiz post router");
   var query = { email: req.user.email }, user_day, user_week, score=0;
 
   //fetching the week and dayorlevel of student from userstatus DB
@@ -438,11 +440,11 @@ router.post('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz',
   });
   
   //fetching the correct answers from quiz DB
-  let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }, 'correct').lean().exec();
-  console.log(quiz_data);
+  let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }, 'correct').sort({ id : 'ascending'}).lean().exec();
+  //console.log(quiz_data);
   
   //req.body contains the submitted answer by the student
-  console.log(req.body);
+  //console.log(req.body);
   var submittedData = req.body;
 
   //checks the submitted answers with the correct answers and score is given
@@ -451,7 +453,7 @@ router.post('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz',
     if(quiz_data[i-1].correct === submittedData[`ans${i}`])
       score += 10;
   }
-  console.log(score);
+  //console.log(score);
 
   //if score is >= 60 next day is revealed, else student should retake the quiz
   if(score >= 60)
