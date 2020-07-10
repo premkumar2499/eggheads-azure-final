@@ -525,6 +525,12 @@ router.get('/userhome/ignite/leaderboard',function(req,res){
   });
 });
 
+
+//Assignments
+router.get('/userhome/ignite/assignments',function(req,res){
+  res.render('assignments');
+});
+
 //kindle routes starts here.
 router.get('/userhome/kindle',function(req,res){
   res.render('kindle');
