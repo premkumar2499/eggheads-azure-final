@@ -74,7 +74,7 @@ router.post('/paid_user_data', function (req, res) {
 
     dbo.collection("userstatuses").find({}).toArray(function (err, result) {
         if (err) throw err;
-        console.log(result);
+        //console.log(result);
         res.render('paid_user_data', {
             results: result,
         });

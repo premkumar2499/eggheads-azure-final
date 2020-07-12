@@ -536,6 +536,10 @@ router.get('/userhome/kindle',function(req,res){
   res.render('kindle');
 });
 
+router.get('/userhome/kindle/web',function(req,res){
+  res.render('web_development');
+});
+
 // logout
 router.get('/logout', ensureAuthenticated,function(req, res){
   req.logout();
