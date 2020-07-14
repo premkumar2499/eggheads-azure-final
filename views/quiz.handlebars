@@ -1,4 +1,4 @@
-<!--<div class="jumbotron bg-white border">
+<!---<div class="jumbotron bg-white border">
     <h1 class="display-4">QUIZ</h1>
     <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to
         featured content or information.</p>
@@ -6,7 +6,7 @@
     <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
     <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
 </div>-->
-<div class="container">
+<!--<div class="container">
     {{#if error_msg}}
         <div class="h4 alert alert-danger text-center">{{ error_msg }}</div>
     {{/if}}
@@ -55,4 +55,106 @@
             $(':input[type="submit"]').prop('disabled', false);
         }
     }).change();
+</script>-->
+
+<!--<div class="jumbotron bg-white border">
+    <h1 class="display-4">QUIZ</h1>
+    <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to
+        featured content or information.</p>
+    <hr class="my-4">
+    <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+    <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+</div>-->
+{{#if already_completed}}
+    <div class="text-center">
+        <svg class="bi bi-check-circle-fill text-success" width="2.5em" height="2.5em"
+            viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+        </svg><br><br>
+        <h4>It seems that you already completed this quiz</h4>
+    </div>
+{{else}}
+    {{#iff quiz_status '==' 1}}
+        <div class="text-center">
+            <svg class="bi bi-check-circle-fill text-success" width="2.5em" height="2.5em"
+                viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+            </svg><br><br>
+            <h4>Congratulations, you passsed!</h4>
+            <h4>Your score: {{score}}% </h4>
+        </div><br><br>
+        <div class="container">
+            {{#each quiz_data}}
+                <p class="h3">{{ this.id }}. {{{ this.question }}}</p></br>
+                <p class="h5">A. {{ this.A }}</p>
+                <p class="h5">B. {{ this.B }}</p>
+                <p class="h5">C. {{ this.C }}</p>
+                <p class="h5">D. {{ this.D }}</p><br>
+                <p class="h5">Correct option: {{this.correct}}</p>
+                {{#iff this.correct '==' this.user_answer}}
+                    <p class="h5 text-success">Your option: {{this.user_answer}}</p><br>
+                {{else}}
+                    <p class="h5 text-danger">Your option: {{this.user_answer}}</p><br>
+                {{/iff}}
+            {{/each}}
+        </div>
+        <div class="col text-center">
+            <a class="btn btn-primary" href="/users/userhome/ignite/week{{user_week}}/day{{user_day}}" role="button">Next Day</a>
+        </div>
+    {{else}}
+        <div class="container">
+            {{#if error_msg}}
+                <div class="h4 alert alert-danger text-center">{{ error_msg }}</div>
+            {{/if}}
+            <h1 class="display-4 text-center">QUIZ {{ currentDay }}</h1>
+            <p class="lead text-center">NOTE: Minimum 60% score is required to unlock the next course</p>
+            <form  id="myForm" action="/users/userhome/ignite/week{{ currentWeek }}/day{{ currentDay }}/quiz{{ currentQuiz }}" method="post">
+                {{#each quiz_data }}
+                    <h1 class="display">{{ this.id }}. {{{ this.question }}}</h1></br>
+                    <div class="container">
+                        <input class="form-check-input" id="ans{{ this.id }}-1" type="radio" name="ans{{ this.id }}" value="A">
+                        <label class="form-check-label" for="ans{{ this.id }}-1">
+                            <p class="h5">{{ this.A }}</p>
+                        </label></br>
+                        <input class="form-check-input" id="ans{{ this.id }}-2" type="radio" name="ans{{ this.id }}" value="B">
+                        <label class="form-check-label" for="ans{{ this.id }}-2">
+                            <p class="h5">{{ this.B }}</p>
+                        </label></br>
+                        <input class="form-check-input" id="ans{{ this.id }}-3" type="radio" name="ans{{ this.id }}" value="C">
+                        <label class="form-check-label" for="ans{{ this.id }}-3">
+                            <p class="h5">{{ this.C }}</p>
+                        </label></br>
+                        <input class="form-check-input" id="ans{{ this.id }}-4" type="radio" name="ans{{ this.id }}" value="D">
+                        <label class="form-check-label" for="ans{{ this.id }}-4">
+                            <p class="h5">{{ this.D }}</p>
+                        </label></br><hr>
+                    </div>
+                {{/each}}
+                <div class="col text-center">
+                    <button type="submit" id="sub" class="btn btn-primary " disabled>Submit</button>
+                </div>
+            <form>
+        </div>
+    {{/iff}}
+{{/if}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+    //$("#exampleModalCenter").modal('show');
+    $(":radio").change(function () {
+        var names = {};
+        $(':radio').each(function () {
+            names[$(this).attr('name')] = true;
+        });
+        var count = 0;
+        $.each(names, function () {
+            count++;
+        });
+        var submitBtn = $(this).find('#sub');
+        if ($(':radio:checked').length === count) {
+            $('#sub').prop('disabled', false);
+        }
+    }).change();
 </script>
+

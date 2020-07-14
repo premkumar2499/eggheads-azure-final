@@ -83,9 +83,9 @@ router.post('/paid_user_data', function (req, res) {
 
 router.post('/change_week_for_all_students', function (req, res) {
     var dbo = db.useDb("eggheadsIgnite");
-    var Week = parseInt(req.body.weekChange)
-    var query ={};
-    var newWeek = { $set: { week: Week, DayOrLevel:1, quiz_attended: 0, quiz_status: 0} };
+    var Week = parseInt(req.body.weekChange);
+    var query = {};
+    var newWeek = { $set: { week: Week, title_id : ((Week-1)*100)+1, DayOrLevel:1, quiz_attended: 0, quiz_status: -1} };
 
     dbo.collection("userstatuses").updateMany(query, newWeek, function(err, res) {
             if (err) throw err;

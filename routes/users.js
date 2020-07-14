@@ -232,8 +232,21 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/', async function(r
   //var query = {$and:[{week:{$regex: req.params.week, $options: 'i'}},{day:{$regex: req.params.day, $options: 'i'}}]}
   //var query = query.and([{ week: req.params.week }, { day: req.params.day }])
 
+  new Promise((resolve, reject) => {
+    var query = {email: req.user.email};
+    //you update code here
+    UserStatus.findOneAndUpdate(
+      query,
+      { $set: { quiz_status: -1}},
+      { new: true }
+    )
+      .then((result) => resolve())
+      .catch((err) => reject(err));
+  });
+
   //get user current video id
   var query = {email:req.user.email};
+  
   let quiz1;
   //check user video id in ignite and get quiz data
   let quiz_data = await UserStatus.find(query,'quiz_status').lean().exec();
@@ -305,7 +318,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
           //you update code here
           UserStatus.findOneAndUpdate(
             query,
-            { $set: { quiz_status: 1}},
+            { $set: { quiz_status: 0}},
             { new: true }
           )
             .then((result) => resolve())
@@ -396,124 +409,164 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
     }*/
   });
 
-router.get('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', async function(req, res,next) {
-  //db.users.update({ userId:89 }, { $inc : { "subjectResults.attempts" : 1, "subjectResults.total_time" : 10, "subjectResults.total_score" : 100 } })
-  //you update code here
-  var query = {email: req.user.email},user_day,user_week;
-  let user_quiz_data = await UserStatus.find(query,'week DayOrLevel').lean().exec();
-  user_quiz_data.forEach(e => {
-    user_week = e.week;
-    user_day = e.DayOrLevel;
-  });
-  
-  let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day } ] }).sort({ id : 'ascending'}).lean().exec();
-  /*var query = {email: req.user.email};
-      new Promise((resolve, reject) => {
-      //you update code here
-      UserStatus.findOneAndUpdate(
-        query,
-        {$inc:{title_id: 1,DayOrLevel:1}},
-        { new: true }
-      )
-        .then((result) => resolve())
-        .catch((err) => reject(err));
-    });*/
-    //console.log("quiz_data"+quiz_data[0]);
-  res.render('quiz',{
-    quiz_data : quiz_data, 
-    currentWeek:parseInt(req.params.currentWeek),
-    currentDay: parseInt(req.params.currentDay),
-    currentQuiz: parseInt(req.params.currentQuiz)
-  });
-});
-
-//AFTER SUBMITTING THE QUIZ
-router.post('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', async function(req, res){
-  //console.log("I am in quiz post router");
-  var query = { email: req.user.email }, user_day, user_week, score=0;
-
-  //fetching the week and dayorlevel of student from userstatus DB
-  let user_quiz_data = await UserStatus.find(query, 'week DayOrLevel').lean().exec();
-  user_quiz_data.forEach(e => {
-    user_week = e.week;
-    user_day = e.DayOrLevel;
-  });
-  
-  //fetching the correct answers from quiz DB
-  let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }, 'correct').sort({ id : 'ascending'}).lean().exec();
-  //console.log(quiz_data);
-  
-  //req.body contains the submitted answer by the student
-  //console.log(req.body);
-  var submittedData = req.body;
-
-  //checks the submitted answers with the correct answers and score is given
-  for(var i=1; i<=10; i++)
-  {
-    if(quiz_data[i-1].correct === submittedData[`ans${i}`])
-      score += 10;
-  }
-  //console.log(score);
-
-  //if score is >= 60 next day is revealed, else student should retake the quiz
-  if(score >= 60)
-  {
-      /*var query = {email: req.user.email};
-      //you update code here
-      UserStatus.updateMany(
-        query,
-        { $set: { DayOrLevel: 2}},
-        { $inc: {title_id: 1}}
-      );*/
-
-    new Promise((resolve, reject) => {
-      var query = {email: req.user.email};
-      //you update code here
-      UserStatus.findOneAndUpdate(
+  router.get('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', async function(req, res,next) {
+    //db.users.update({ userId:89 }, { $inc : { "subjectResults.attempts" : 1, "subjectResults.total_time" : 10, "subjectResults.total_score" : 100 } })
+    //you update code here
+    var query = {email: req.user.email},user_day,user_week;
+    let user_quiz_data = await UserStatus.find(query,'week DayOrLevel quiz_status quiz_attended').lean().exec();
+    user_quiz_data.forEach(e => {
+      user_week = e.week;
+      user_day = e.DayOrLevel;
+      user_quiz_status = e.quiz_status;
+      user_quiz_attended = e.quiz_attended;
+    });
+    
+    let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day } ] }).lean().exec();
+    /*var query = {email: req.user.email};
+        new Promise((resolve, reject) => {
+        //you update code here
+        UserStatus.findOneAndUpdate(
           query,
-          { $inc:{title_id: 1,DayOrLevel:1, quiz_attended: 1, quiz_cumulative_score: score,quiz_status: -1}},
+          {$inc:{title_id: 1,DayOrLevel:1}},
           { new: true }
         )
-        .then((result) => resolve())
-        .catch((err) => reject(err));
-    });
-    res.redirect('/users/userhome/ignite/week'+user_week+'/day'+user_day);
-  }
-    //old data
-    /*query = { $inc: { title_id: 1, DayOrLevel:1, quiz_attended: 1, quiz_status: -1, quiz_cumulative_score: score} }
-    
-    UserStatus.find({email: req.user.email}, function(err, result){
-      if(err) throw err;
-      UserStatus.updateOne(query, function(err, result){
-        console.log(result);
+          .then((result) => resolve())
+          .catch((err) => reject(err));
       });*/
-    
-      /*UserStatus.find({ email: req.user.email }, function(err, result){
-        //var user_data = result[0];
-        if(err) throw err;
-        console.log(result);
-        console.log(result.week);
-        console.log(result.DayOrLevel);
-        res.redirect('/users/userhome/ignite/week:'+user_week+'/day:'+result.DayOrLevel);
-      });*/
-    
-    //});
-  //}
-  else{
-    /*let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }).lean().exec();
-    res.render('quiz', {
-      quiz_data: quiz_data,
-      currentWeek: parseInt(req.params.currentWeek),
+     // console.log("quiz_data"+quiz_data);
+     console.log("user_quiz_attended",user_quiz_attended);
+    var already_completed = (user_quiz_attended>=parseInt(req.params.currentQuiz))?1:0;
+    console.log("already_completed",already_completed);
+    res.render('quiz',{
+      already_completed : already_completed,
+      quiz_data : quiz_data, 
+      quiz_status : user_quiz_status,
+      currentWeek:parseInt(req.params.currentWeek),
       currentDay: parseInt(req.params.currentDay),
-      currentQuiz: parseInt(req.params.currentQuiz),
-      error_msg: "Your score is less than 60%, Please retake to pass the quiz"
-    });*/
-    req.flash('error_msg', 'Your score is less than 60%, Please retake to pass the quiz');
-    console.log(user_week);
-    console.log(user_day);
-    res.redirect('/users/userhome/ignite/week'+user_week+'/day'+user_day+'/quiz'+parseInt(req.params.currentQuiz));
-  }
-});
+      currentQuiz: parseInt(req.params.currentQuiz)
+    });
+  });
+  
+  //AFTER SUBMITTING THE QUIZ
+  router.post('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', async function(req, res){
+    console.log("I am in quiz post router");
+    var query = { email: req.user.email }, user_day, user_week, score=0;
+  
+    //fetching the week and dayorlevel of student from userstatus DB
+    let user_quiz_data = await UserStatus.find(query, 'week DayOrLevel quiz_status').lean().exec();
+    user_quiz_data.forEach(e => {
+      user_week = e.week;
+      user_day = e.DayOrLevel;
+      user_quiz_status = e.quiz_status;
+    });
+    
+    //fetching the correct answers from quiz DB
+    let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }).lean().exec();
+    console.log(quiz_data);
+    
+    //req.body contains the submitted answer by the student
+    console.log(req.body);
+    var submittedData = req.body;
+  
+    for(i=1; i<=10; i++)
+    {
+      quiz_data[i-1]["user_answer"] = submittedData[`ans${i}`]
+    }
+    console.log(quiz_data);
+  
+    //checks the submitted answers with the correct answers and score is given
+    for(var i=1; i<=10; i++)
+    {
+      if(quiz_data[i-1].correct === submittedData[`ans${i}`])
+        score += 10;
+    }
+    console.log(score);
+  
+    //if score is >= 60 next day is revealed, else student should retake the quiz
+    if(score >= 60)
+    {
+        /*var query = {email: req.user.email};
+        //you update code here
+        UserStatus.updateMany(
+          query,
+          { $set: { DayOrLevel: 2}},
+          { $inc: {title_id: 1}}
+        );*/
+  
+      new Promise((resolve, reject) => {
+        var query = {email: req.user.email};
+        //you update code here
+        UserStatus.findOneAndUpdate(
+            query,
+            { $inc:{title_id: 1,DayOrLevel:1, quiz_attended: 1, quiz_cumulative_score: score}},
+            { new: true }
+          )
+          .then((result) => resolve())
+          .catch((err) => reject(err));
+      });
+      new Promise((resolve, reject) => {
+        var query = {email: req.user.email};
+        //you update code here
+        UserStatus.findOneAndUpdate(
+          query,
+          { $set: { quiz_status: 1}},
+          { new: true }
+        )
+          .then((result) => resolve())
+          .catch((err) => reject(err));
+      });
+      let user_quiz_data = await UserStatus.find(query, 'week DayOrLevel quiz_status').lean().exec();
+      user_quiz_data.forEach(e => {
+        user_week = e.week;
+        user_day = e.DayOrLevel;
+        user_quiz_status = e.quiz_status;
+      });
+      
+      res.render('quiz', {
+        quiz_data: quiz_data,
+        submittedData: submittedData,
+        quiz_status: user_quiz_status,
+        score: score,
+        user_week: user_week,
+        user_day: user_day
+      })
+      //res.redirect('/users/userhome/ignite/week'+user_week+'/day'+user_day);
+    }
+      //old data
+      /*query = { $inc: { title_id: 1, DayOrLevel:1, quiz_attended: 1, quiz_status: -1, quiz_cumulative_score: score} }
+      
+      UserStatus.find({email: req.user.email}, function(err, result){
+        if(err) throw err;
+        UserStatus.updateOne(query, function(err, result){
+          console.log(result);
+        });*/
+      
+        /*UserStatus.find({ email: req.user.email }, function(err, result){
+          //var user_data = result[0];
+          if(err) throw err;
+          console.log(result);
+          console.log(result.week);
+          console.log(result.DayOrLevel);
+          res.redirect('/users/userhome/ignite/week:'+user_week+'/day:'+result.DayOrLevel);
+        });*/
+      
+      //});
+    //}
+    else{
+      /*let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }).lean().exec();
+      res.render('quiz', {
+        quiz_data: quiz_data,
+        currentWeek: parseInt(req.params.currentWeek),
+        currentDay: parseInt(req.params.currentDay),
+        currentQuiz: parseInt(req.params.currentQuiz),
+        error_msg: "Your score is less than 60%, Please retake to pass the quiz"
+      });*/
+      req.flash('error_msg', 'Your score is less than 60%, Please retake to pass the quiz');
+      console.log(user_week);
+      console.log(user_day);
+      res.redirect('/users/userhome/ignite/week'+user_week+'/day'+user_day+'/quiz'+parseInt(req.params.currentQuiz));
+    }
+  });
 
 
 //View Learderboard.
