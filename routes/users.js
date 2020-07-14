@@ -237,7 +237,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/', async function(r
     //you update code here
     UserStatus.findOneAndUpdate(
       query,
-      { $set: { quiz_status: -1}},
+      { $set: { quiz_status: 0}},
       { new: true }
     )
       .then((result) => resolve())
