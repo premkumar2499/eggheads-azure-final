@@ -75,7 +75,7 @@
         <h4>It seems that you already completed this quiz</h4>
     </div>
 {{else}}
-    {{#iff quiz_status '==' 1}}
+    {{#if quiz_status}}
         <div class="text-center">
             <svg class="bi bi-check-circle-fill text-success" width="2.5em" height="2.5em"
                 viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -137,7 +137,7 @@
                 </div>
             <form>
         </div>
-    {{/iff}}
+    {{/if}}
 {{/if}}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
