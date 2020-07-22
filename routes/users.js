@@ -421,7 +421,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
       user_quiz_attended = e.quiz_attended;
     });
     
-    let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day } ] }).lean().exec();
+    let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day } ] }).sort({ id : 'ascending'}).lean().exec();
     /*var query = {email: req.user.email};
         new Promise((resolve, reject) => {
         //you update code here
@@ -461,7 +461,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
     });
     
     //fetching the correct answers from quiz DB
-    let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }).lean().exec();
+    let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }).sort({ id : 'ascending'}).lean().exec();
     console.log(quiz_data);
     
     //req.body contains the submitted answer by the student
