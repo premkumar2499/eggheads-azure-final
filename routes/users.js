@@ -434,9 +434,9 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
           .catch((err) => reject(err));
       });*/
      // console.log("quiz_data"+quiz_data);
-     console.log("user_quiz_attended",user_quiz_attended);
+     //console.log("user_quiz_attended",user_quiz_attended);
     var already_completed = (user_quiz_attended>=parseInt(req.params.currentQuiz))?1:0;
-    console.log("already_completed",already_completed);
+    //console.log("already_completed",already_completed);
     res.render('quiz',{
       already_completed : already_completed,
       quiz_data : quiz_data, 
@@ -449,7 +449,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
   
   //AFTER SUBMITTING THE QUIZ
   router.post('/userhome/ignite/week:currentWeek/day:currentDay/quiz:currentQuiz', async function(req, res){
-    console.log("I am in quiz post router");
+    //console.log("I am in quiz post router");
     var query = { email: req.user.email }, user_day, user_week, score=0;
   
     //fetching the week and dayorlevel of student from userstatus DB
@@ -462,17 +462,17 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
     
     //fetching the correct answers from quiz DB
     let quiz_data = await quiz_model.find({ $and: [{ week: user_week }, { day: user_day }] }).sort({ id : 'ascending'}).lean().exec();
-    console.log(quiz_data);
+    //console.log(quiz_data);
     
     //req.body contains the submitted answer by the student
-    console.log(req.body);
+    //console.log(req.body);
     var submittedData = req.body;
   
     for(i=1; i<=10; i++)
     {
       quiz_data[i-1]["user_answer"] = submittedData[`ans${i}`]
     }
-    console.log(quiz_data);
+    //console.log(quiz_data);
   
     //checks the submitted answers with the correct answers and score is given
     for(var i=1; i<=10; i++)
@@ -480,7 +480,7 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
       if(quiz_data[i-1].correct === submittedData[`ans${i}`])
         score += 10;
     }
-    console.log(score);
+    //console.log(score);
   
     //if score is >= 60 next day is revealed, else student should retake the quiz
     if(score >= 60)
@@ -562,8 +562,8 @@ router.get('/userhome/ignite/week:currentWeek/day:clickedDay/video:videoId', asy
         error_msg: "Your score is less than 60%, Please retake to pass the quiz"
       });*/
       req.flash('error_msg', 'Your score is less than 60%, Please retake to pass the quiz');
-      console.log(user_week);
-      console.log(user_day);
+      //console.log(user_week);
+      //console.log(user_day);
       res.redirect('/users/userhome/ignite/week'+user_week+'/day'+user_day+'/quiz'+parseInt(req.params.currentQuiz));
     }
   });
